@@ -3,57 +3,42 @@ import './DragArea.scss';
 
 const DragArea = () => {
   const [data, setData] = useState([]);
-  const [draged, setDraged] = useState(null);
 
-  const clearOverItem = (e) => {
-    if (e.target.className.includes("item")){
-      const overItem = e.target
-      overItem.classList.remove('before');
-      overItem.classList.remove('after');
-      return
-    }
-    if(e.target.offsetParent.className.includes("item")){
-      const overItem = e.target.offsetParent
-      overItem.classList.remove('before');
-      overItem.classList.remove('after');
-      return
-    }
-    
+  let draged
+
+  const getOverItem = (e) => {
+    if (e.target.className.includes('item')) return e.target;
+    if (e.target.offsetParent.className.includes('item'))
+      return e.target.offsetParent;
+    return null;
   };
+  const clearOverItem = (e) => {
+    const overItem = getOverItem(e)
+    if (overItem) {     
+      overItem.classList.remove('before');
+      overItem.classList.remove('after');      
+    }    
+  };  
   const dragStartHandler = (e) => {
-    // console.log('dragStart');
     e.target.classList.add('draged');
-    setDraged(e.target);
+    draged = e.target
   };
   const dragEndHandler = (e) => {
-    // console.log('dragEnd');
     e.target.classList.remove('draged');
-    setDraged(null);
+    draged = null
   };
   const dragOverHandler = (e) => {
-    // console.log(e);
-    let overItem = e.target;
-    if (draged === overItem) return;
-    if (overItem.className.includes('item')) {
-      if (e.nativeEvent.offsetX > overItem.clientWidth / 2) {
-        clearOverItem(e);
-        overItem.classList.add('after');
-      } else {
-        clearOverItem(e);
-        overItem.classList.add('before');
-      }
-    } else if (overItem.offsetParent.className.includes('item')) {
-      overItem = overItem.offsetParent;
-      if (e.nativeEvent.layerX > overItem.clientWidth / 2) {
-        clearOverItem(e);
-        overItem.classList.add('after');
-      } else {
-        clearOverItem(e);
-        overItem.classList.add('before');
-      }
-    }
-    // console.log('offset', e.nativeEvent.offsetX);
-    // console.log('width', overItem.clientWidth);
+    const overItem = getOverItem(e);
+    if (!overItem || draged === overItem) return;
+
+    //判斷滑鼠在拖曳區域前半或後半
+    if (e.nativeEvent.layerX > overItem.clientWidth / 2) {
+      clearOverItem(e);
+      overItem.classList.add('after');
+    } else {
+      clearOverItem(e);
+      overItem.classList.add('before');
+    }   
   };
   const dragLeaveHandler = (e) => {
     clearOverItem(e);
