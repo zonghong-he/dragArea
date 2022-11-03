@@ -4,7 +4,7 @@ import './DragArea.scss';
 const DragArea = () => {
   const [data, setData] = useState([]);
 
-  let draged
+  let draged;
 
   const getOverItem = (e) => {
     if (e.target.className.includes('item')) return e.target;
@@ -13,21 +13,22 @@ const DragArea = () => {
     return null;
   };
   const clearOverItem = (e) => {
-    const overItem = getOverItem(e)
-    if (overItem) {     
+    const overItem = getOverItem(e);
+    if (overItem) {
       overItem.classList.remove('before');
-      overItem.classList.remove('after');      
-    }    
-  };  
+      overItem.classList.remove('after');
+    }
+  };
   const dragStartHandler = (e) => {
     e.target.classList.add('draged');
-    draged = e.target
+    draged = e.target;
   };
   const dragEndHandler = (e) => {
     e.target.classList.remove('draged');
-    draged = null
+    draged = null;
   };
   const dragOverHandler = (e) => {
+    e.preventDefault();
     const overItem = getOverItem(e);
     if (!overItem || draged === overItem) return;
 
@@ -38,12 +39,39 @@ const DragArea = () => {
     } else {
       clearOverItem(e);
       overItem.classList.add('before');
-    }   
+    }
   };
   const dragLeaveHandler = (e) => {
     clearOverItem(e);
   };
   const dropHandler = (e) => {
+    const overItem = getOverItem(e);
+    console.log(e);
+    if (!overItem || overItem === draged) return;
+
+    //drag drop資料
+    const overItemContent = +overItem.children[0].innerText;
+    const dragedContent = +draged.children[0].innerText;
+
+    const direction = overItem.className.includes('after') ? 'after' : 'before';
+
+    const overItemIndex = data.findIndex((item) => item === overItemContent);
+    const dragedIndex = data.findIndex((item) => item === dragedContent);
+
+    const newData = [];
+    //拖曳目標插入指定位置
+    for (let i = 0; i < data.length; i++) {
+      if (i === dragedIndex) continue;
+      if (direction === 'before' && i === overItemIndex) {
+        newData.push(dragedContent);
+        newData.push(data[i]);
+        continue;
+      }
+      newData.push(data[i]);
+      if (i === overItemIndex) newData.push(dragedContent);
+    }
+
+    setData(newData);
     clearOverItem(e);
   };
 
