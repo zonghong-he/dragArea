@@ -3,7 +3,6 @@ import './DragArea.scss';
 
 const DragArea = () => {
   const [data, setData] = useState([]);
-
   let draged;
 
   const getOverItem = (e) => {
@@ -55,21 +54,30 @@ const DragArea = () => {
 
     const direction = overItem.className.includes('after') ? 'after' : 'before';
 
-    const overItemIndex = data.findIndex((item) => item === overItemContent);
-    const dragedIndex = data.findIndex((item) => item === dragedContent);
+    const overItemIndex = data.findIndex(
+      (item) => item.content === overItemContent
+    );
+    const dragedIndex = data.findIndex(
+      (item) => item.content === dragedContent
+    );
 
     const newData = [];
     //拖曳目標插入指定位置
     for (let i = 0; i < data.length; i++) {
       if (i === dragedIndex) continue;
       if (direction === 'before' && i === overItemIndex) {
-        newData.push(dragedContent);
+        newData.push({ content: dragedContent, animation: false });
         newData.push(data[i]);
         continue;
       }
       newData.push(data[i]);
-      if (i === overItemIndex) newData.push(dragedContent);
+      if (i > dragedIndex && i <= overItemIndex)
+        newData[newData.length - 1].animation = true;
+      if (i === overItemIndex)
+        newData.push({ content: dragedContent, animation: false });
     }
+    // overItem.classList.add('change');
+    console.log(newData);
 
     setData(newData);
     clearOverItem(e);
@@ -78,7 +86,7 @@ const DragArea = () => {
   useEffect(() => {
     const array = [];
     for (let i = 1; i < 11; i++) {
-      array.push(i);
+      array.push({ content: i, animation: false });
     }
     setData(array);
   }, []);
@@ -92,11 +100,24 @@ const DragArea = () => {
       onDragOver={dragOverHandler}
       onDragLeave={dragLeaveHandler}
       onDrop={dropHandler}
+      onAnimationEnd={(e) => {
+        console.log('anime end');
+        const newData = data.map((item) => {
+          item.animation = false;
+          return item;
+        });
+        console.log(newData);
+        setData(newData)
+      }}
     >
-      {data.map((i) => {
+      {data.map((item) => {
         return (
-          <div className="item" key={i} draggable="true">
-            <h1>{i}</h1>
+          <div
+            className={`item ${item.animation ? 'change' : ''}`}
+            key={item.content}
+            draggable={!item.animation}
+          >
+            <h1>{item.content}</h1>
             <div>
               <h2>test</h2>
             </div>
