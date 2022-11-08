@@ -3,7 +3,7 @@ import './DragArea.scss';
 
 const DragArea = () => {
   const [data, setData] = useState([]);
-  let draged;
+  const [draged, setDraged] = useState(null);
 
   const getOverItem = (e) => {
     if (e.target.className.includes('item')) return e.target;
@@ -20,11 +20,11 @@ const DragArea = () => {
   };
   const dragStartHandler = (e) => {
     e.target.classList.add('draged');
-    draged = e.target;
+    setDraged(e.target);
   };
   const dragEndHandler = (e) => {
     e.target.classList.remove('draged');
-    draged = null;
+    setDraged(null);
   };
   const dragOverHandler = (e) => {
     e.preventDefault();
@@ -66,27 +66,42 @@ const DragArea = () => {
     for (let i = 0; i < data.length; i++) {
       if (i === dragedIndex) continue;
       if (direction === 'before' && i === overItemIndex) {
-        newData.push({ content: dragedContent, animation: false });
+        newData.push({ content: dragedContent, animation: '' });
         newData.push(data[i]);
         continue;
       }
       newData.push(data[i]);
+      //移動動畫
       if (i > dragedIndex && i <= overItemIndex)
-        newData[newData.length - 1].animation = true;
+        newData[newData.length - 1].animation = 'right-in';
+      if (direction === 'before' && i <= dragedIndex + 1 && i > overItemIndex) {
+        newData[newData.length - 2].animation = 'left-in';
+      }
+      if (direction === 'after' && i < dragedIndex + 1 && i > overItemIndex) {
+        newData[newData.length - 1].animation = 'left-in';
+      }
+
       if (i === overItemIndex)
-        newData.push({ content: dragedContent, animation: false });
+        newData.push({ content: dragedContent, animation: '' });
     }
     // overItem.classList.add('change');
-    console.log(newData);
 
     setData(newData);
     clearOverItem(e);
+  };
+  const animationEndHandler = (e) => {
+    console.log('anime end');
+    const newData = data.map((item) => {
+      item.animation = '';
+      return item;
+    });
+    setData(newData);
   };
 
   useEffect(() => {
     const array = [];
     for (let i = 1; i < 11; i++) {
-      array.push({ content: i, animation: false });
+      array.push({ content: i, animation: '' });
     }
     setData(array);
   }, []);
@@ -100,20 +115,12 @@ const DragArea = () => {
       onDragOver={dragOverHandler}
       onDragLeave={dragLeaveHandler}
       onDrop={dropHandler}
-      onAnimationEnd={(e) => {
-        console.log('anime end');
-        const newData = data.map((item) => {
-          item.animation = false;
-          return item;
-        });
-        console.log(newData);
-        setData(newData)
-      }}
+      onAnimationEnd={animationEndHandler}
     >
       {data.map((item) => {
         return (
           <div
-            className={`item ${item.animation ? 'change' : ''}`}
+            className={`item ${item.animation}`}
             key={item.content}
             draggable={!item.animation}
           >

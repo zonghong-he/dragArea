@@ -43,15 +43,27 @@
 .item.draged{
   opacity: .5;
 }
-.change{
-  animation: changePosition .5s;
+.right-in{
+  animation: right-in .5s;
 }
-@keyframes changePosition{
+.left-in{
+  animation: left-in .5s;
+}
+@keyframes right-in{
   0%{
     position: relative;
     left: calc( var(--item-width) + var(--item-margin)*2 );
   }
   100%{
     left: 0;
+  }
+}
+@keyframes left-in{
+  0%{
+    position: relative;
+    right: calc( var(--item-width) + var(--item-margin)*2 );
+  }
+  100%{
+    right: 0;
   }
 }
