@@ -1,0 +1,35 @@
+.item{
+  position: relative;
+  background-color: lightblue;
+  width: 180px;
+  height: 250px;
+  margin: 2px;
+  
+}
+.item::before,
+.item::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 4px;
+  height: 100%;
+  background: lightcoral;
+  opacity: 0;
+}
+.item.before::before{
+  left: -4px;
+  top: 0;
+  opacity: 1;
+}
+.item.after::after{
+  right: -4px;
+  top: 0;
+  opacity: 1;
+}
+.item.draged{
+  opacity: .5;
+  z-index: 2;
+}
+.item .content{
+  text-align: center;  
+}

@@ -10,40 +10,7 @@
   margin: 2rem auto;
   overflow: hidden;
 }
-.item{
-  position: relative;
-  background-color: lightblue;
-  width: 180px;
-  height: 220px;
-  margin: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.item::before,
-.item::after {
-  content: "";
-  position: absolute;
-  display: block;
-  width: 4px;
-  height: 100%;
-  background: lightcoral;
-  opacity: 0;
-}
-.item.before::before{
-  left: -4px;
-  top: 0;
-  opacity: 1;
-}
-.item.after::after{
-  right: -4px;
-  top: 0;
-  opacity: 1;
-}
-.item.draged{
-  opacity: .5;
-  z-index: 2;
-}
+
 .right-in{
   animation: right-in .3s;
 }

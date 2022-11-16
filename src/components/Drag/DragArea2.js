@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './DragArea.scss';
+import Item from './Item';
 
 const DragArea = () => {
   const [data, setData] = useState([]);
@@ -20,20 +21,22 @@ const DragArea = () => {
     }
   };
   const dragStartHandler = (e) => {
-    e.target.classList.add('draged');
-    setDraged(e.target);
+    const target = getOverItem(e);
+    target.classList.add('draged');
+    setDraged(target);
   };
   const dragEndHandler = (e) => {
-    e.target.classList.remove('draged');
+    const target = getOverItem(e);
+    target.classList.remove('draged');
     setDraged(null);
   };
   const dragOverHandler = (e) => {
     e.preventDefault();
     const overItem = getOverItem(e);
     if (!overItem || draged === overItem || isAnimate) return;
-
-    const overItemContent = +overItem.children[0].innerText;
-    const dragedContent = +draged.children[0].innerText;
+    
+    const overItemContent = +overItem.querySelector("h2").innerText
+    const dragedContent = +draged.querySelector("h2").innerText
 
     const overItemIndex = data.findIndex(
       (item) => item.content === overItemContent
@@ -111,16 +114,13 @@ const DragArea = () => {
     >
       {data.map((item) => {
         return (
-          <div
-            className={`item ${item.animation}`}
+          <Item
             key={item.content}
+            className={item.animation}
             draggable={!item.animation}
-          >
-            <h1>{item.content}</h1>
-            <div>
-              <h2>test</h2>
-            </div>
-          </div>
+            content={item.content}
+            data-key={item.content}
+          />
         );
       })}
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './DragArea.scss';
+import Item from './Item';
 
 const DragArea = () => {
   const [data, setData] = useState([]);
@@ -19,11 +20,13 @@ const DragArea = () => {
     }
   };
   const dragStartHandler = (e) => {
-    e.target.classList.add('draged');
-    setDraged(e.target);
+    const target = getOverItem(e);
+    target.classList.add('draged');
+    setDraged(target);
   };
   const dragEndHandler = (e) => {
-    e.target.classList.remove('draged');
+    const target = getOverItem(e);
+    target.classList.remove('draged');
     setDraged(null);
   };
   const dragOverHandler = (e) => {
@@ -45,12 +48,11 @@ const DragArea = () => {
   };
   const dropHandler = (e) => {
     const overItem = getOverItem(e);
-    console.log(e);
     if (!overItem || overItem === draged) return;
-
+    console.log(draged.children[1].children[0]);
     //drag drop資料
-    const overItemContent = +overItem.children[0].innerText;
-    const dragedContent = +draged.children[0].innerText;
+    const overItemContent = +overItem.querySelector('h2').innerText;
+    const dragedContent = +draged.querySelector('h2').innerText;
 
     const direction = overItem.className.includes('after') ? 'after' : 'before';
 
@@ -85,7 +87,7 @@ const DragArea = () => {
         newData.push({ content: dragedContent, animation: '' });
     }
     // overItem.classList.add('change');
-
+    console.log(overItem);
     setData(newData);
     clearOverItem(e);
   };
@@ -119,16 +121,13 @@ const DragArea = () => {
     >
       {data.map((item) => {
         return (
-          <div
-            className={`item ${item.animation}`}
+          <Item
             key={item.content}
+            className={item.animation}
             draggable={!item.animation}
-          >
-            <h1>{item.content}</h1>
-            <div>
-              <h2>test</h2>
-            </div>
-          </div>
+            content={item.content}
+            data-key={item.content}
+          />
         );
       })}
     </div>
